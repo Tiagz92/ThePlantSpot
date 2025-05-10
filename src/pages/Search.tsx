@@ -7,6 +7,7 @@ import PlantList from "../components/PlantList.tsx";
 import SearchBar from "../components/SearchBar.tsx";
 import "../components/SearchBar.css";
 import "./Search.css";
+import plantData from "../data/plants.json";
 
 export type Plant = {
 	id: number;
@@ -14,7 +15,7 @@ export type Plant = {
 	Family: string;
 	"Light tolered": string;
 	Watering: string;
-"Temperature max": {
+	"Temperature max": {
 		C: number;
 		F: number;
 	};
@@ -24,8 +25,6 @@ export type Plant = {
 	};
 	Growth: string;
 	Pruning: string;
-	Difficulties: string;
-	C: string;
 	Img: string;
 	"Common name": string;
 	"Latin name": string;
@@ -34,26 +33,30 @@ export type Plant = {
 const Search = () => {
 	const [plants, setPlants] = useState<Plant[]>([]);
 	const [loading, setLoading] = useState(true);
-	const [error, setError] = useState(null);
+	const [error, setError] = useState<string | null>(null);
 	const [filteredPlants, setFilteredPlants] = useState<Plant[]>([]);
 	const [displayedPlants, setDisplayedPlants] = useState<Plant[]>([]);
 	const [showFilters, setShowFilters] = useState(false);
 
 	const handleSearch = (searchTerm: string) => {
-		const filtered = plants.filter((plant) =>
-			plant["Common name"][0]?.toLowerCase().includes(searchTerm.toLowerCase()),
+		const filtered = plants.filter(
+			(plant) =>
+				plant["Common name"].toLowerCase().includes(searchTerm) ||
+				plant["Latin name"].toLowerCase().includes(searchTerm) ||
+				plant.Family.toLowerCase().includes(searchTerm),
 		);
 		setFilteredPlants(filtered);
 		setDisplayedPlants(filtered);
 	};
 
+	/* API is disabled atm due to external API fees
+	
 	useEffect(() => {
 		const url = "https://house-plants2.p.rapidapi.com/all";
-
 		const options = {
 			method: "GET",
 			headers: {
-				"x-rapidapi-key": "9db15f58b8msh5101d3f3e72beaep175fadjsn258b615b608e",
+				"x-rapidapi-key": "f7d7a6cec8mshc1d48ccb38fedeep1077a0jsn585dfb20d4b4",
 				"x-rapidapi-host": "house-plants2.p.rapidapi.com",
 			},
 		};
@@ -69,7 +72,7 @@ const Search = () => {
 			})
 			.then((data) => {
 				const formattedData = data.map((plant: Plant) => ({
-					id: plant.id,
+					id: Number(plant.id),
 					Family: plant.Family || "",
 					"Light tolered": plant["Light tolered"] || "",
 					Watering: plant.Watering || "",
@@ -80,7 +83,7 @@ const Search = () => {
 					Difficulties: plant.Difficulties || "",
 					C: plant.C || "",
 					Img: plant.Img || "",
-					"Common name": plant["Common name"] || "",
+					"Common name": Array.isArray(plant["Common name"]) ? plant["Common name"].join(", ") : plant["Common name"] || "",
 					"Latin name": plant["Latin name"] || "",
 				}));
 				setPlants(formattedData);
@@ -92,6 +95,35 @@ const Search = () => {
 				setError(err.message);
 				setLoading(false);
 			});
+	}, []); */
+
+	useEffect(() => {
+		try {
+			// fichier JSON
+			const formattedData = plantData.map((plant, index) => ({
+				id: Number(plant.id),
+				index: index,
+				Family: plant.Family || "",
+				"Light tolered": plant["Light tolered"] || "",
+				Watering: plant.Watering || "",
+				"Temperature max": plant["Temperature max"] || { C: 0, F: 0 },
+				"Temperature min": plant["Temperature min"] || { C: 0, F: 0 },
+				Growth: plant.Growth || "",
+				Pruning: plant.Pruning || "",
+				Img: plant.Img || "",
+				"Common name": Array.isArray(plant["Common name"])
+					? plant["Common name"].join(", ")
+					: plant["Common name"] || "",
+				"Latin name": plant["Latin name"] || "",
+			}));
+			setPlants(formattedData);
+			setFilteredPlants(formattedData);
+			setDisplayedPlants(formattedData);
+			setLoading(false);
+		} catch (err) {
+			setError("Erreur lors du chargement des données");
+			setLoading(false);
+		}
 	}, []);
 
 	if (loading)

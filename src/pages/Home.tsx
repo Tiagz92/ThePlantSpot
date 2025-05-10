@@ -39,7 +39,7 @@ const Home = () => {
 				</div>
 			</div>
 
-			<div className="other-informations">
+			{/* <div className="other-informations">
 				<div className="exceptional-plant-varieties">
 					<div className="text">
 						<h3>Exceptional Plant Varieties</h3>
@@ -77,7 +77,7 @@ const Home = () => {
 						</p>
 					</div>
 				</div>
-			</div>
+			</div> */}
 
 			<div className="footer-line" />
 		</>

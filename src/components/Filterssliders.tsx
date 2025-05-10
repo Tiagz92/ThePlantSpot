@@ -6,20 +6,25 @@ import {
 	getPruningDifficulty,
 	getTemperatureDifficulty,
 	getWateringDifficulty,
-} from "./PlantList.tsx";
+} from "./PlantList";
 import "./Filterssliders.css";
-import type { Plant } from "../pages/Search.tsx";
+import { useQuiz } from "../contexts/QuizContext";
+import type { Plant } from "../pages/Search";
 
 const Filterssliders = ({
 	plants,
 	setDisplayedPlants,
-}: { plants: Plant[]; setDisplayedPlants: (plants: Plant[]) => void }) => {
+}: {
+	plants: Plant[];
+	setDisplayedPlants: (plants: Plant[]) => void;
+}) => {
+	const { answers } = useQuiz();
+
 	const [valueToleredlight, setValueToleredlight] = useState<number>(0);
 	const [valueWatering, setValueWatering] = useState<number>(0);
 	const [valueTemperaturerange, setValueTemperaturerange] = useState<number>(0);
 	const [valueGrowth, setValueGrowth] = useState<number>(0);
 	const [valuePruning, setValuePruning] = useState<number>(0);
-	const [valueDifficulty, setValueDifficulty] = useState<number>(0);
 
 	const [interactedToleredlight, setInteractedToleredlight] =
 		useState<boolean>(false);
@@ -28,106 +33,85 @@ const Filterssliders = ({
 		useState<boolean>(false);
 	const [interactedGrowth, setInteractedGrowth] = useState<boolean>(false);
 	const [interactedPruning, setInteractedPruning] = useState<boolean>(false);
-	const [interactedDifficulty, setInteractedDifficulty] =
-		useState<boolean>(false);
 
 	const choicesToleredlight = [
-		"", // Neutre
-		"Diffuse light ( Less than 5,300 lux / 500 fc)", // Facile
-		"Strong light ( 21,500 to 3,200 lux/2000 to 300 fc)", // Moyenne
-		"Full sun (+21,500 lux /+2000 fc )", // Difficile
+		"",
+		"Diffuse light ( Less than 5,300 lux / 500 fc)",
+		"Strong light ( 21,500 to 3,200 lux/2000 to 300 fc)",
+		"Full sun (+21,500 lux /+2000 fc )",
 	];
 
 	const choicesWatering = [
-		"", // Neutre
-		"Change water regularly in the cup & Water when soil is half dry", // Facile
-		"Water when soil is half dry & Can dry between watering", // Moyenne
-		"Keep moist between watering & Must not dry between watering", // Difficile
+		"",
+		"Keep moist between watering & Must not dry between watering",
+		"Water when soil is half dry & Can dry between watering",
+		"Change water regularly in the cup & Water when soil is half dry",
 	];
 
-	const choicesTemperaturerange = [
-		"", // Neutre
-		"Warm (25°C and above)", // Facile
-		"Moderate (15-25°C)", // Moyenne
-		"Cold (Less than 15°C)", // Difficile
-	];
+	const choicesTemperaturerange = ["", "Small", "Middle", "Long"];
 
-	const choicesGrowth = [
-		"", // Neutre
-		"Slow", // Difficile
-		"Regular", // Moyenne
-		"Fast", // Facile
-	];
+	const choicesGrowth = ["", "Slow", "Regular", "Fast"];
 
-	const choicesPruning = [
-		"", // Neutre
-		"Never", // Facile
-		"After blooming", // Moyenne
-		"If needed", // Difficile
-	];
+	const choicesPruning = ["", "Never", "After blooming", "If needed"];
 
-	const choicesDifficulty = [
-		"", // Neutre
-		"Facile", // Facile
-		"Moyenne", // Moyenne
-		"Difficile", // Difficile
-	];
+	// Associer les réponses du quiz aux sliders
+	useEffect(() => {
+		if (answers.length > 0) {
+			setValueToleredlight(
+				answers[0] === "Very well lit"
+					? 3
+					: answers[0] === "Moderately lit"
+						? 2
+						: 1,
+			);
 
-	// Fonction de gestion des changements de valeur des sliders
-	const handleToleredlightChange = (
-		event: React.ChangeEvent<HTMLInputElement>,
-	) => {
-		setValueToleredlight(Number.parseInt(event.target.value));
-		setInteractedToleredlight(true); // Marquer comme interagi
-		setInteractedToleredlight(event.target.value !== "0");
-	};
-	const handleWateringChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-		setValueWatering(Number.parseInt(event.target.value));
-		setInteractedWatering(true);
-		setInteractedWatering(event.target.value !== "0");
-	};
-	const handleTemperaturerangeChange = (
-		event: React.ChangeEvent<HTMLInputElement>,
-	) => {
-		setValueTemperaturerange(Number.parseInt(event.target.value));
-		setInteractedTemperaturerange(true);
-		setInteractedTemperaturerange(event.target.value !== "0");
-	};
-	const handleGrowthChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-		setValueGrowth(Number.parseInt(event.target.value));
-		setInteractedGrowth(true);
-		setInteractedGrowth(event.target.value !== "0");
-	};
-	const handlePruningChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-		setValuePruning(Number.parseInt(event.target.value));
-		setInteractedPruning(true);
-		setInteractedPruning(event.target.value !== "0");
-	};
-	const handleDifficultyChange = (
-		event: React.ChangeEvent<HTMLInputElement>,
-	) => {
-		setValueDifficulty(Number.parseInt(event.target.value));
-		setInteractedDifficulty(true);
-		setInteractedDifficulty(event.target.value !== "0");
-	};
+			setValueWatering(
+				answers[1] === "Yes, I water them every day."
+					? 1
+					: answers[1] === "No, I water them once a week."
+						? 2
+						: 3,
+			);
 
-	const resetFilters = () => {
-		setValueToleredlight(0);
-		setValueWatering(0);
-		setValueTemperaturerange(0);
-		setValueGrowth(0);
-		setValuePruning(0);
-		setValueDifficulty(0);
+			setValueTemperaturerange(
+				answers[2] ===
+					"Yes, the temperature varies a lot, especially between seasons."
+					? 1
+					: answers[2] ===
+							"Sometimes, there are slight fluctuations, but it's generally manageable."
+						? 2
+						: 1,
+			);
 
-		setInteractedToleredlight(false);
-		setInteractedWatering(false);
-		setInteractedTemperaturerange(false);
-		setInteractedGrowth(false);
-		setInteractedPruning(false);
-		setInteractedDifficulty(false);
-	};
+			setValueGrowth(
+				answers[3] ===
+					"Yes, I love fast-growing plants! They’re so rewarding to watch."
+					? 3
+					: answers[3] ===
+							"I don't mind them, but I also enjoy plants that grow more slowly."
+						? 2
+						: 1,
+			);
 
-	// filtrage des plantes
+			setValuePruning(
+				answers[4] ===
+					"Yes, I enjoy it! It's satisfying to shape and maintain my plants."
+					? 3
+					: answers[4] ===
+							"I don't mind doing it, but it's not something I particularly look forward to."
+						? 2
+						: 1,
+			);
+
+			setInteractedToleredlight(true);
+			setInteractedWatering(true);
+			setInteractedTemperaturerange(true);
+			setInteractedGrowth(true);
+			setInteractedPruning(true);
+		}
+	}, [answers]);
+
+	// Fonction de filtrage des plantes
 	const filterPlants = useCallback(() => {
 		return plants.filter((plant) => {
 			let lightMatch = true;
@@ -135,7 +119,6 @@ const Filterssliders = ({
 			let tempMatch = true;
 			let growthMatch = true;
 			let pruningMatch = true;
-			let difficultyMatch = true;
 
 			if (interactedToleredlight && valueToleredlight !== 0) {
 				lightMatch =
@@ -145,6 +128,7 @@ const Filterssliders = ({
 				wateringMatch = getWateringDifficulty(plant.Watering) === valueWatering;
 			}
 			if (interactedTemperaturerange && valueTemperaturerange !== 0) {
+				tempMatch =
 					getTemperatureDifficulty(
 						plant["Temperature min"].C,
 						plant["Temperature max"].C,
@@ -156,18 +140,9 @@ const Filterssliders = ({
 			if (interactedPruning && valuePruning !== 0) {
 				pruningMatch = getPruningDifficulty(plant.Pruning) === valuePruning;
 			}
-			if (interactedDifficulty && valueDifficulty !== 0) {
-				difficultyMatch =
-					Math.round(calculateAverageDifficulty(plant)) === valueDifficulty;
-			}
 
 			return (
-				lightMatch &&
-				wateringMatch &&
-				tempMatch &&
-				growthMatch &&
-				pruningMatch &&
-				difficultyMatch
+				lightMatch && wateringMatch && tempMatch && growthMatch && pruningMatch
 			);
 		});
 	}, [
@@ -177,13 +152,11 @@ const Filterssliders = ({
 		valueTemperaturerange,
 		valueGrowth,
 		valuePruning,
-		valueDifficulty,
 		interactedToleredlight,
 		interactedWatering,
 		interactedTemperaturerange,
 		interactedGrowth,
 		interactedPruning,
-		interactedDifficulty,
 	]);
 
 	useEffect(() => {
@@ -191,107 +164,117 @@ const Filterssliders = ({
 		setDisplayedPlants(filtered);
 	}, [filterPlants, setDisplayedPlants]);
 
-	const getSliderClass = (interacted: boolean) => {
-		return interacted ? "slider active" : "slider inactive";
+	// Réinitialiser tous les sliders
+	const resetFilters = () => {
+		setValueToleredlight(0);
+		setValueWatering(0);
+		setValueTemperaturerange(0);
+		setValueGrowth(0);
+		setValuePruning(0);
+
+		setInteractedToleredlight(false);
+		setInteractedWatering(false);
+		setInteractedTemperaturerange(false);
+		setInteractedGrowth(false);
+		setInteractedPruning(false);
 	};
 
 	return (
-		<>
-			<div className="sliders-container">
-				<div className="slideritem">
-					<h3>Tolered Light</h3>
-					<input
-						type="range"
-						min="0"
-						max="3"
-						value={valueToleredlight}
-						onChange={handleToleredlightChange}
-						className={getSliderClass(interactedToleredlight)}
-					/>
-					<p>
-						<strong>{choicesToleredlight[valueToleredlight]}</strong>
-					</p>
-				</div>
-
-				<div className="slideritem">
-					<h3>Watering</h3>
-					<input
-						type="range"
-						min="0"
-						max="3"
-						value={valueWatering}
-						onChange={handleWateringChange}
-						className={getSliderClass(interactedWatering)}
-					/>
-					<p>
-						<strong>{choicesWatering[valueWatering]}</strong>
-					</p>
-				</div>
-
-				<div className="slideritem">
-					<h3>Temperature range</h3>
-					<input
-						type="range"
-						min="0"
-						max="3"
-						value={valueTemperaturerange}
-						onChange={handleTemperaturerangeChange}
-						className={getSliderClass(interactedTemperaturerange)}
-					/>
-					<p>
-						<strong>{choicesTemperaturerange[valueTemperaturerange]}</strong>
-					</p>
-				</div>
-
-				<div className="slideritem">
-					<h3>Growth</h3>
-					<input
-						type="range"
-						min="0"
-						max="3"
-						value={valueGrowth}
-						onChange={handleGrowthChange}
-						className={getSliderClass(interactedGrowth)}
-					/>
-					<p>
-						<strong>{choicesGrowth[valueGrowth]}</strong>
-					</p>
-				</div>
-
-				<div className="slideritem">
-					<h3>Pruning</h3>
-					<input
-						type="range"
-						min="0"
-						max="3"
-						value={valuePruning}
-						onChange={handlePruningChange}
-						className={getSliderClass(interactedPruning)}
-					/>
-					<p>
-						<strong>{choicesPruning[valuePruning]}</strong>
-					</p>
-				</div>
-
-				<div className="slideritem">
-					<h3>Difficulty</h3>
-					<input
-						type="range"
-						min="0"
-						max="3"
-						value={valueDifficulty}
-						onChange={handleDifficultyChange}
-						className={getSliderClass(interactedDifficulty)}
-					/>
-					<p>
-						<strong>{choicesDifficulty[valueDifficulty]}</strong>
-					</p>
-				</div>
-				<button type="button" onClick={resetFilters} className="reset-button">
-					RESET
-				</button>
+		<div className="sliders-container">
+			<div className="slideritem">
+				<h3>Tolered Light</h3>
+				<input
+					type="range"
+					min="0"
+					max="3"
+					className={`slider ${interactedToleredlight ? "active" : "inactive"}`}
+					value={valueToleredlight}
+					onChange={(e) => {
+						setValueToleredlight(Number(e.target.value));
+						setInteractedToleredlight(true);
+					}}
+				/>
+				<p>
+					<strong>{choicesToleredlight[valueToleredlight]}</strong>
+				</p>
 			</div>
-		</>
+
+			<div className="slideritem">
+				<h3>Watering</h3>
+				<input
+					type="range"
+					min="0"
+					max="3"
+					className={`slider ${interactedWatering ? "active" : "inactive"}`}
+					value={valueWatering}
+					onChange={(e) => {
+						setValueWatering(Number(e.target.value));
+						setInteractedWatering(true);
+					}}
+				/>
+				<p>
+					<strong>{choicesWatering[valueWatering]}</strong>
+				</p>
+			</div>
+
+			<div className="slideritem">
+				<h3>Temperature Range</h3>
+				<input
+					type="range"
+					min="0"
+					max="3"
+					className={`slider ${interactedTemperaturerange ? "active" : "inactive"}`}
+					value={valueTemperaturerange}
+					onChange={(e) => {
+						setValueTemperaturerange(Number(e.target.value));
+						setInteractedTemperaturerange(true);
+					}}
+				/>
+				<p>
+					<strong>{choicesTemperaturerange[valueTemperaturerange]}</strong>
+				</p>
+			</div>
+
+			<div className="slideritem">
+				<h3>Growth</h3>
+				<input
+					type="range"
+					min="0"
+					max="3"
+					className={`slider ${interactedGrowth ? "active" : "inactive"}`}
+					value={valueGrowth}
+					onChange={(e) => {
+						setValueGrowth(Number(e.target.value));
+						setInteractedGrowth(true);
+					}}
+				/>
+				<p>
+					<strong>{choicesGrowth[valueGrowth]}</strong>
+				</p>
+			</div>
+
+			<div className="slideritem">
+				<h3>Pruning</h3>
+				<input
+					type="range"
+					min="0"
+					max="3"
+					className={`slider ${interactedPruning ? "active" : "inactive"}`}
+					value={valuePruning}
+					onChange={(e) => {
+						setValuePruning(Number(e.target.value));
+						setInteractedPruning(true);
+					}}
+				/>
+				<p>
+					<strong>{choicesPruning[valuePruning]}</strong>
+				</p>
+			</div>
+
+			<button type="button" onClick={resetFilters} className="reset-button">
+				RESET
+			</button>
+		</div>
 	);
 };
 

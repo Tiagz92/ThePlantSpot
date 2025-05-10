@@ -9,7 +9,7 @@
 	text-align: center;
 	font-weight: bold;
 	color: #ffff;
-	font-size: 4rem;
+	font-size: 3.5rem;
 	margin-bottom: 1rem;
 }
 
@@ -26,7 +26,8 @@
 	position: relative;
 	z-index: 1;
 	font-size: 1.8rem;
-	margin: 0 auto; /* Centrer le cadre */
+	margin: 0 auto;
+	min-height: 350px;
 }
 
 .welcomequiz {
@@ -41,7 +42,6 @@
 	display: flex;
 	flex-direction: column;
 	justify-content: space-between;
-	gap: 10px;
 }
 
 .buttonnav {
@@ -54,11 +54,11 @@
 
 .quiz p {
 	font-weight: bold;
-	font-size: 30px;
+	font-size: 25px;
 }
 
 .quiz label {
-	font-size: 20px;
+	font-size: 13px;
 }
 
 .quiz button {
@@ -73,7 +73,7 @@
 	margin-bottom: 1rem;
 	cursor: pointer;
 	width: 10rem;
-	height: 6rem;
+	height: 3rem;
 	margin-top: 1rem;
 }
 

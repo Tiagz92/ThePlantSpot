@@ -305,16 +305,20 @@ const PlantList = ({ plant, index }: PlantListProps) => {
 						{getTemperatureImage(
 							plant["Temperature min"].C,
 							plant["Temperature max"].C,
-						)?.map((image, index) => (
-							<img
-								key={`Temperature ${plant.id}-${index}`}
-								src={image}
-								alt="Temperature"
-								title={`${plant.Watering}`}
-								className="colpic"
-								width="50"
-							/>
-						))}
+						)?.map((image, index) => {
+							const range =
+								plant["Temperature max"].C - plant["Temperature min"].C;
+							return (
+								<img
+									key={`Temperature ${plant.id}-${index}`}
+									src={image}
+									alt="Temperature"
+									title={`${range}`}
+									className="colpic"
+									width="50"
+								/>
+							);
+						})}
 						{selectedPlant && (
 							<div className="picdetails">
 								<h2>

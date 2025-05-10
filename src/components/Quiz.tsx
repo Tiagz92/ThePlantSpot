@@ -1,7 +1,9 @@
 import { useState } from "react";
 import "./Quiz.css";
+import { useQuiz } from "../contexts/QuizContext";
 
 const Quiz = () => {
+	const { setAnswers } = useQuiz();
 	const questions = [
 		{
 			question: "Is your house well-lit?",
@@ -69,6 +71,7 @@ const Quiz = () => {
 	};
 
 	const handleSubmit = () => {
+		setAnswers(userAnswers);
 		setIsSubmitted(true);
 	};
 
