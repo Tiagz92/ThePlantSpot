@@ -1,298 +1,185 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from 'react'
+import './Filterssliders.css'
+import type { Plant } from '../pages/Search.tsx'
+
+// Assuming these functions are correctly defined in PlantList.tsx
 import {
-	calculateAverageDifficulty,
-	getGrowthDifficulty,
-	getLightDifficulty,
-	getPruningDifficulty,
-	getTemperatureDifficulty,
-	getWateringDifficulty,
-} from "./PlantList.tsx";
-import "./Filterssliders.css";
-import type { Plant } from "../pages/Search.tsx";
+  calculateAverageDifficulty,
+  getGrowthDifficulty,
+  getLightDifficulty,
+  getPruningDifficulty,
+  getTemperatureDifficulty,
+  getWateringDifficulty,
+} from './PlantList.tsx'
 
-const Filterssliders = ({
-	plants,
-	setDisplayedPlants,
+const FilterSliders = ({
+  plants,
+  setDisplayedPlants,
 }: { plants: Plant[]; setDisplayedPlants: (plants: Plant[]) => void }) => {
-	const [valueToleredlight, setValueToleredlight] = useState<number>(0);
-	const [valueWatering, setValueWatering] = useState<number>(0);
-	const [valueTemperaturerange, setValueTemperaturerange] = useState<number>(0);
-	const [valueGrowth, setValueGrowth] = useState<number>(0);
-	const [valuePruning, setValuePruning] = useState<number>(0);
-	const [valueDifficulty, setValueDifficulty] = useState<number>(0);
+  const [filters, setFilters] = useState({
+    light: '0',
+    watering: '0',
+    temperature: '0',
+    growth: '0',
+    pruning: '0',
+    difficulty: '0',
+  })
 
-	const [interactedToleredlight, setInteractedToleredlight] =
-		useState<boolean>(false);
-	const [interactedWatering, setInteractedWatering] = useState<boolean>(false);
-	const [interactedTemperaturerange, setInteractedTemperaturerange] =
-		useState<boolean>(false);
-	const [interactedGrowth, setInteractedGrowth] = useState<boolean>(false);
-	const [interactedPruning, setInteractedPruning] = useState<boolean>(false);
-	const [interactedDifficulty, setInteractedDifficulty] =
-		useState<boolean>(false);
+  const handleFilterChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const { name, value } = event.target
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      [name]: value,
+    }))
+  }
 
-	const choicesToleredlight = [
-		"", // Neutre
-		"Diffuse light ( Less than 5,300 lux / 500 fc)", // Facile
-		"Strong light ( 21,500 to 3,200 lux/2000 to 300 fc)", // Moyenne
-		"Full sun (+21,500 lux /+2000 fc )", // Difficile
-	];
+  const resetFilters = () => {
+    setFilters({
+      light: '0',
+      watering: '0',
+      temperature: '0',
+      growth: '0',
+      pruning: '0',
+      difficulty: '0',
+    })
+  }
 
-	const choicesWatering = [
-		"", // Neutre
-		"Change water regularly in the cup & Water when soil is half dry", // Facile
-		"Water when soil is half dry & Can dry between watering", // Moyenne
-		"Keep moist between watering & Must not dry between watering", // Difficile
-	];
+  useEffect(() => {
+    const filteredPlants = plants.filter((plant) => {
+      if (
+        filters.light !== '0' &&
+        getLightDifficulty(plant['Light tolered']) !==
+          Number.parseInt(filters.light)
+      )
+        return false
+      if (
+        filters.watering !== '0' &&
+        getWateringDifficulty(plant.Watering) !==
+          Number.parseInt(filters.watering)
+      )
+        return false
+      if (
+        filters.temperature !== '0' &&
+        getTemperatureDifficulty(
+          plant['Temperature min'].C,
+          plant['Temperature max'].C,
+        ) !== Number.parseInt(filters.temperature)
+      )
+        return false
+      if (
+        filters.growth !== '0' &&
+        getGrowthDifficulty(plant.Growth) !== Number.parseInt(filters.growth)
+      )
+        return false
+      if (
+        filters.pruning !== '0' &&
+        getPruningDifficulty(plant.Pruning) !== Number.parseInt(filters.pruning)
+      )
+        return false
+      if (
+        filters.difficulty !== '0' &&
+        Math.round(calculateAverageDifficulty(plant)) !==
+          Number.parseInt(filters.difficulty)
+      )
+        return false
+      return true
+    })
+    setDisplayedPlants(filteredPlants)
+  }, [filters, plants, setDisplayedPlants])
 
-	const choicesTemperaturerange = [
-		"", // Neutre
-		"Warm (25°C and above)", // Facile
-		"Moderate (15-25°C)", // Moyenne
-		"Cold (Less than 15°C)", // Difficile
-	];
+  return (
+    <div className='filters-container'>
+      <div className='filter-item'>
+        <label htmlFor='light-filter'>Light</label>
+        <select
+          id='light-filter'
+          name='light'
+          value={filters.light}
+          onChange={handleFilterChange}
+        >
+          <option value='0'>All</option>
+          <option value='1'>Easy</option>
+          <option value='2'>Medium</option>
+          <option value='3'>Hard</option>
+        </select>
+      </div>
+      {/* Repeat for other filters */}
+      <div className='filter-item'>
+        <label htmlFor='watering-filter'>Watering</label>
+        <select
+          id='watering-filter'
+          name='watering'
+          value={filters.watering}
+          onChange={handleFilterChange}
+        >
+          <option value='0'>All</option>
+          <option value='1'>Easy</option>
+          <option value='2'>Medium</option>
+          <option value='3'>Hard</option>
+        </select>
+      </div>
+      <div className='filter-item'>
+        <label htmlFor='temperature-filter'>Temperature</label>
+        <select
+          id='temperature-filter'
+          name='temperature'
+          value={filters.temperature}
+          onChange={handleFilterChange}
+        >
+          <option value='0'>All</option>
+          <option value='1'>Easy</option>
+          <option value='2'>Medium</option>
+          <option value='3'>Hard</option>
+        </select>
+      </div>
+      <div className='filter-item'>
+        <label htmlFor='growth-filter'>Growth</label>
+        <select
+          id='growth-filter'
+          name='growth'
+          value={filters.growth}
+          onChange={handleFilterChange}
+        >
+          <option value='0'>All</option>
+          <option value='1'>Fast</option>
+          <option value='2'>Regular</option>
+          <option value='3'>Slow</option>
+        </select>
+      </div>
+      <div className='filter-item'>
+        <label htmlFor='pruning-filter'>Pruning</label>
+        <select
+          id='pruning-filter'
+          name='pruning'
+          value={filters.pruning}
+          onChange={handleFilterChange}
+        >
+          <option value='0'>All</option>
+          <option value='1'>Never</option>
+          <option value='2'>After blooming</option>
+          <option value='3'>If needed</option>
+        </select>
+      </div>
+      <div className='filter-item'>
+        <label htmlFor='difficulty-filter'>Difficulty</label>
+        <select
+          id='difficulty-filter'
+          name='difficulty'
+          value={filters.difficulty}
+          onChange={handleFilterChange}
+        >
+          <option value='0'>All</option>
+          <option value='1'>Easy</option>
+          <option value='2'>Medium</option>
+          <option value='3'>Hard</option>
+        </select>
+      </div>
 
-	const choicesGrowth = [
-		"", // Neutre
-		"Slow", // Difficile
-		"Regular", // Moyenne
-		"Fast", // Facile
-	];
+      <button type='button' onClick={resetFilters} className='reset-button'>
+        Reset Filters
+      </button>
+    </div>
+  )
+}
 
-	const choicesPruning = [
-		"", // Neutre
-		"Never", // Facile
-		"After blooming", // Moyenne
-		"If needed", // Difficile
-	];
-
-	const choicesDifficulty = [
-		"", // Neutre
-		"Facile", // Facile
-		"Moyenne", // Moyenne
-		"Difficile", // Difficile
-	];
-
-	// Fonction de gestion des changements de valeur des sliders
-	const handleToleredlightChange = (
-		event: React.ChangeEvent<HTMLInputElement>,
-	) => {
-		setValueToleredlight(Number.parseInt(event.target.value));
-		setInteractedToleredlight(true); // Marquer comme interagi
-		setInteractedToleredlight(event.target.value !== "0");
-	};
-	const handleWateringChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-		setValueWatering(Number.parseInt(event.target.value));
-		setInteractedWatering(true);
-		setInteractedWatering(event.target.value !== "0");
-	};
-	const handleTemperaturerangeChange = (
-		event: React.ChangeEvent<HTMLInputElement>,
-	) => {
-		setValueTemperaturerange(Number.parseInt(event.target.value));
-		setInteractedTemperaturerange(true);
-		setInteractedTemperaturerange(event.target.value !== "0");
-	};
-	const handleGrowthChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-		setValueGrowth(Number.parseInt(event.target.value));
-		setInteractedGrowth(true);
-		setInteractedGrowth(event.target.value !== "0");
-	};
-	const handlePruningChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-		setValuePruning(Number.parseInt(event.target.value));
-		setInteractedPruning(true);
-		setInteractedPruning(event.target.value !== "0");
-	};
-	const handleDifficultyChange = (
-		event: React.ChangeEvent<HTMLInputElement>,
-	) => {
-		setValueDifficulty(Number.parseInt(event.target.value));
-		setInteractedDifficulty(true);
-		setInteractedDifficulty(event.target.value !== "0");
-	};
-
-	const resetFilters = () => {
-		setValueToleredlight(0);
-		setValueWatering(0);
-		setValueTemperaturerange(0);
-		setValueGrowth(0);
-		setValuePruning(0);
-		setValueDifficulty(0);
-
-		setInteractedToleredlight(false);
-		setInteractedWatering(false);
-		setInteractedTemperaturerange(false);
-		setInteractedGrowth(false);
-		setInteractedPruning(false);
-		setInteractedDifficulty(false);
-	};
-
-	// filtrage des plantes
-	const filterPlants = useCallback(() => {
-		return plants.filter((plant) => {
-			let lightMatch = true;
-			let wateringMatch = true;
-			let tempMatch = true;
-			let growthMatch = true;
-			let pruningMatch = true;
-			let difficultyMatch = true;
-
-			if (interactedToleredlight && valueToleredlight !== 0) {
-				lightMatch =
-					getLightDifficulty(plant["Light tolered"]) === valueToleredlight;
-			}
-			if (interactedWatering && valueWatering !== 0) {
-				wateringMatch = getWateringDifficulty(plant.Watering) === valueWatering;
-			}
-			if (interactedTemperaturerange && valueTemperaturerange !== 0) {
-					getTemperatureDifficulty(
-						plant["Temperature min"].C,
-						plant["Temperature max"].C,
-					) === valueTemperaturerange;
-			}
-			if (interactedGrowth && valueGrowth !== 0) {
-				growthMatch = getGrowthDifficulty(plant.Growth) === valueGrowth;
-			}
-			if (interactedPruning && valuePruning !== 0) {
-				pruningMatch = getPruningDifficulty(plant.Pruning) === valuePruning;
-			}
-			if (interactedDifficulty && valueDifficulty !== 0) {
-				difficultyMatch =
-					Math.round(calculateAverageDifficulty(plant)) === valueDifficulty;
-			}
-
-			return (
-				lightMatch &&
-				wateringMatch &&
-				tempMatch &&
-				growthMatch &&
-				pruningMatch &&
-				difficultyMatch
-			);
-		});
-	}, [
-		plants,
-		valueToleredlight,
-		valueWatering,
-		valueTemperaturerange,
-		valueGrowth,
-		valuePruning,
-		valueDifficulty,
-		interactedToleredlight,
-		interactedWatering,
-		interactedTemperaturerange,
-		interactedGrowth,
-		interactedPruning,
-		interactedDifficulty,
-	]);
-
-	useEffect(() => {
-		const filtered = filterPlants();
-		setDisplayedPlants(filtered);
-	}, [filterPlants, setDisplayedPlants]);
-
-	const getSliderClass = (interacted: boolean) => {
-		return interacted ? "slider active" : "slider inactive";
-	};
-
-	return (
-		<>
-			<div className="sliders-container">
-				<div className="slideritem">
-					<h3>Tolered Light</h3>
-					<input
-						type="range"
-						min="0"
-						max="3"
-						value={valueToleredlight}
-						onChange={handleToleredlightChange}
-						className={getSliderClass(interactedToleredlight)}
-					/>
-					<p>
-						<strong>{choicesToleredlight[valueToleredlight]}</strong>
-					</p>
-				</div>
-
-				<div className="slideritem">
-					<h3>Watering</h3>
-					<input
-						type="range"
-						min="0"
-						max="3"
-						value={valueWatering}
-						onChange={handleWateringChange}
-						className={getSliderClass(interactedWatering)}
-					/>
-					<p>
-						<strong>{choicesWatering[valueWatering]}</strong>
-					</p>
-				</div>
-
-				<div className="slideritem">
-					<h3>Temperature range</h3>
-					<input
-						type="range"
-						min="0"
-						max="3"
-						value={valueTemperaturerange}
-						onChange={handleTemperaturerangeChange}
-						className={getSliderClass(interactedTemperaturerange)}
-					/>
-					<p>
-						<strong>{choicesTemperaturerange[valueTemperaturerange]}</strong>
-					</p>
-				</div>
-
-				<div className="slideritem">
-					<h3>Growth</h3>
-					<input
-						type="range"
-						min="0"
-						max="3"
-						value={valueGrowth}
-						onChange={handleGrowthChange}
-						className={getSliderClass(interactedGrowth)}
-					/>
-					<p>
-						<strong>{choicesGrowth[valueGrowth]}</strong>
-					</p>
-				</div>
-
-				<div className="slideritem">
-					<h3>Pruning</h3>
-					<input
-						type="range"
-						min="0"
-						max="3"
-						value={valuePruning}
-						onChange={handlePruningChange}
-						className={getSliderClass(interactedPruning)}
-					/>
-					<p>
-						<strong>{choicesPruning[valuePruning]}</strong>
-					</p>
-				</div>
-
-				<div className="slideritem">
-					<h3>Difficulty</h3>
-					<input
-						type="range"
-						min="0"
-						max="3"
-						value={valueDifficulty}
-						onChange={handleDifficultyChange}
-						className={getSliderClass(interactedDifficulty)}
-					/>
-					<p>
-						<strong>{choicesDifficulty[valueDifficulty]}</strong>
-					</p>
-				</div>
-				<button type="button" onClick={resetFilters} className="reset-button">
-					RESET
-				</button>
-			</div>
-		</>
-	);
-};
-
-export default Filterssliders;
+export default FilterSliders
