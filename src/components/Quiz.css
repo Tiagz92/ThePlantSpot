@@ -1,92 +1,52 @@
 .quiz-container {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.quiz-title {
-  text-align: center;
-  font-weight: bold;
-  color: #ffff;
-  font-size: 4rem;
-  margin-bottom: 1rem;
+	padding: 2rem;
+	background-color: var(--secondary-color);
 }
 
 .quiz {
-  display: grid;
-  grid-template-rows: auto 2fr;
-  grid-gap: 10px;
-  width: 75%;
-  background-color: #fbf6f1;
-  border-radius: 45px;
-  color: black;
-  padding: 2rem;
-  text-align: center;
-  position: relative;
-  z-index: 1;
-  font-size: 1.8rem;
-  margin: 0 auto; /* Centrer le cadre */
+	max-width: 600px;
+	margin: 0 auto;
+	background-color: var(--background-color);
+	padding: 2rem;
+	border-radius: 8px;
+	box-shadow: 0 4px 8px var(--shadow-color);
 }
 
-.welcomequiz {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
+.quiz h2 {
+	text-align: center;
+	margin-bottom: 2rem;
 }
 
-.buttonsquiz {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  gap: 10px;
+.quiz-question {
+	margin-bottom: 1.5rem;
 }
 
-.buttonnav {
-  bottom: 0;
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  padding-top: 10px;
+.quiz-question p {
+	font-size: var(--font-size-lg);
+	margin-bottom: 1rem;
 }
 
-.quiz p {
-  font-weight: bold;
-  font-size: 30px;
+.quiz-options {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
 }
 
-.quiz label {
-  font-size: 20px;
+.quiz-options button {
+	background-color: white;
+	border: 1px solid #ccc;
+	padding: 1rem;
+	border-radius: 5px;
+	cursor: pointer;
+	transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
-.quiz button {
-  background-color: #624f25;
-  color: white;
-  border: none;
-  border-radius: 15px;
-  padding: 15px;
-  text-align: center;
-  text-decoration: none;
-  font-size: 18px;
-  margin-bottom: 1rem;
-  cursor: pointer;
-  width: 10rem;
-  height: 6rem;
-  margin-top: 1rem;
+.quiz-options button:hover {
+	background-color: #f0f0f0;
 }
 
-.quiz button:disabled {
-  display: none;
-}
-
-.quiz form {
-  font-size: 2rem;
-}
-
-.quiz-section {
-  text-align: center;
-  padding: 20px;
-  width: 100%;
+.quiz-options button.selected {
+	background-color: var(--primary-color);
+	color: white;
+	border-color: var(--primary-color);
 }
